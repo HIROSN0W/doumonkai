@@ -6,7 +6,7 @@ import re
 class StudentIDGenerator:
     def __init__(self, root):
         self.root = root
-        self.root.title("学籍番号生成アプリケーション")
+        self.root.title("同門会抽選2025")
         self.root.geometry("600x400")  # 初期サイズをより小さく設定
         self.root.configure(bg="#f0f0f0")
         self.root.minsize(500, 250)  # 最小サイズをさらに小さく設定
@@ -16,11 +16,11 @@ class StudentIDGenerator:
         
         # 各学年の最大人数を設定
         self.max_students = {
-            1: 25,
-            2: 30,
-            3: 28,
-            4: 20,
-            5: 22
+            1: 42,
+            2: 46,
+            3: 44,
+            4: 39,
+            5: 38
         }
         
         # 各学年の重み（デフォルト値は1.0）
@@ -55,47 +55,47 @@ class StudentIDGenerator:
     def setup_ui(self):
         # フレームの設定
         main_frame = tk.Frame(self.root, bg="#f0f0f0")
-        main_frame.pack(pady=10, padx=15, fill=tk.BOTH, expand=True)  # パディングを小さく
+        main_frame.pack(pady=10, padx=15, fill=tk.BOTH, expand=True)  
         
         # 学籍番号表示エリア
         id_frame = tk.Frame(main_frame, bg="#f0f0f0")  # LabelFrameからFrameに変更
-        id_frame.pack(pady=10, fill=tk.X)  # パディングを小さく
+        id_frame.pack(pady=10, fill=tk.X)  
 
         self.id_label = tk.Label(id_frame,font=("Helvetica", 60, "bold"), bg="#f0f0f0", fg="#333333")
-        self.id_label.pack(pady=10)  # パディングを小さく
+        self.id_label.pack(pady=10)  
 
         # 学年ごとのカウント表示フレーム（折りたたみ可能）
         self.count_expanded = True
         
         count_header_frame = tk.Frame(main_frame, bg="#f0f0f0")
-        count_header_frame.pack(pady=(10,0), fill=tk.X)  # パディングを小さく
+        count_header_frame.pack(pady=(10,0), fill=tk.X)  
         
         count_title_frame = tk.Frame(count_header_frame, bg="#f0f0f0")
-        count_title_frame.pack(side=tk.LEFT, padx=5)  # パディングを小さく
+        count_title_frame.pack(side=tk.LEFT, padx=5)  
         
         count_title = tk.Label(count_title_frame, text="学年ごとの当選人数", font=("Helvetica", 11, "bold"), bg="#f0f0f0")  # フォントサイズを小さく
         count_title.pack(side=tk.LEFT)
         
         self.count_toggle_btn = tk.Button(count_title_frame, text="▼", width=2, command=self.toggle_count_section)
-        self.count_toggle_btn.pack(side=tk.LEFT, padx=3)  # パディングを小さく
+        self.count_toggle_btn.pack(side=tk.LEFT, padx=3)  
         
         self.count_frame = tk.LabelFrame(main_frame, text="", font=("Helvetica", 11), bg="#f0f0f0", bd=1)  # フォントサイズを小さく
-        self.count_frame.pack(pady=(0,10), fill=tk.X)  # パディングを小さく
+        self.count_frame.pack(pady=(0,10), fill=tk.X)  
         
         count_inner_frame = tk.Frame(self.count_frame, bg="#f0f0f0")
-        count_inner_frame.pack(pady=5, padx=5)  # パディングを小さく
+        count_inner_frame.pack(pady=5, padx=5)  
         
         # 学年ごとのカウント表示ラベルを作成
         self.count_labels = {}
         for grade in range(1, 6):
             grade_frame = tk.Frame(count_inner_frame, bg="#f0f0f0")
-            grade_frame.grid(row=0, column=grade-1, padx=10)  # パディングを小さく
+            grade_frame.grid(row=0, column=grade-1, padx=10)  
             
             grade_label = tk.Label(grade_frame, text=f"{grade}年", font=("Helvetica", 11), bg="#f0f0f0")  # フォントサイズを小さく
             grade_label.pack()
             
             self.count_labels[grade] = tk.Label(grade_frame, text="0", font=("Helvetica", 16, "bold"), bg="#f0f0f0")  # フォントサイズを小さく
-            self.count_labels[grade].pack(pady=3)  # パディングを小さく
+            self.count_labels[grade].pack(pady=3)  
             
             # 各学年の残り人数も表示
             remaining_label = tk.Label(grade_frame, text=f"残り: {len(self.remaining_ids[grade])}", font=("Helvetica", 9), bg="#f0f0f0")  # フォントサイズを小さく
@@ -105,47 +105,47 @@ class StudentIDGenerator:
         self.weight_expanded = True
         
         weight_header_frame = tk.Frame(main_frame, bg="#f0f0f0")
-        weight_header_frame.pack(pady=(10,0), fill=tk.X)  # パディングを小さく
+        weight_header_frame.pack(pady=(10,0), fill=tk.X)  
         
         weight_title_frame = tk.Frame(weight_header_frame, bg="#f0f0f0")
-        weight_title_frame.pack(side=tk.LEFT, padx=5)  # パディングを小さく
+        weight_title_frame.pack(side=tk.LEFT, padx=5)  
         
         weight_title = tk.Label(weight_title_frame, text="学年ごとの重み設定", font=("Helvetica", 11, "bold"), bg="#f0f0f0")  # フォントサイズを小さく
         weight_title.pack(side=tk.LEFT)
         
         self.weight_toggle_btn = tk.Button(weight_title_frame, text="▼", width=2, command=self.toggle_weight_section)
-        self.weight_toggle_btn.pack(side=tk.LEFT, padx=3)  # パディングを小さく
+        self.weight_toggle_btn.pack(side=tk.LEFT, padx=3)  
         
         self.weight_frame = tk.LabelFrame(main_frame, text="", font=("Helvetica", 11), bg="#f0f0f0", bd=1)  # フォントサイズを小さく
-        self.weight_frame.pack(pady=(0,10), fill=tk.X)  # パディングを小さく
+        self.weight_frame.pack(pady=(0,10), fill=tk.X)  
         
         weight_inner_frame = tk.Frame(self.weight_frame, bg="#f0f0f0")
-        weight_inner_frame.pack(pady=5, padx=5)  # パディングを小さく
+        weight_inner_frame.pack(pady=5, padx=5)  
         
         # 重み設定用のテキストボックスを作成
         self.weight_entries = {}
         for grade in range(1, 6):
             grade_label = tk.Label(weight_inner_frame, text=f"{grade}年:", font=("Helvetica", 11), bg="#f0f0f0")  # フォントサイズを小さく
-            grade_label.grid(row=0, column=(grade-1)*2, padx=3, pady=3)  # パディングを小さく
+            grade_label.grid(row=0, column=(grade-1)*2, padx=3, pady=3)  
             
             self.weight_entries[grade] = tk.Entry(weight_inner_frame, width=4, font=("Helvetica", 11))  # サイズとフォントを小さく
             self.weight_entries[grade].insert(0, "1.0")  # デフォルト値を設定
-            self.weight_entries[grade].grid(row=0, column=(grade-1)*2+1, padx=3, pady=3)  # パディングを小さく
+            self.weight_entries[grade].grid(row=0, column=(grade-1)*2+1, padx=3, pady=3)  
         
         # 重み更新ボタン
         update_button = tk.Button(self.weight_frame, text="重みを更新", font=("Helvetica", 11), 
-                                   command=self.update_weights, bg="#4CAF50", fg="white", pady=3)  # フォントサイズとパディングを小さく
-        update_button.pack(pady=5)  # パディングを小さく
+                                   command=self.update_weights, bg="#4CAF50", fg="white", pady=3)  
+        update_button.pack(pady=5)  
         
         # 学籍番号生成ボタン
         generate_button = tk.Button(main_frame, text="学籍番号を生成", font=("Helvetica", 12, "bold"), 
-                                     command=self.generate_student_id, bg="#2196F3", fg="white", pady=5, padx=15)  # サイズを小さく
-        generate_button.pack(pady=10)  # パディングを小さく
+                                     command=self.generate_student_id, bg="#2196F3", fg="white", pady=5, padx=15)  
+        generate_button.pack(pady=10)  
         
         # リセットボタン
         reset_button = tk.Button(main_frame, text="リセット", font=("Helvetica", 11), 
-                                  command=self.reset_application, bg="#f44336", fg="white", pady=3)  # フォントサイズとパディングを小さく
-        reset_button.pack(pady=5)  # パディングを小さく
+                                  command=self.reset_application, bg="#f44336", fg="white", pady=3)  
+        reset_button.pack(pady=5)  
     
     def update_weights(self):
         """重みの設定を更新する"""
